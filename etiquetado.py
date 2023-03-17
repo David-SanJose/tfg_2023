@@ -31,12 +31,13 @@ for row in lista_f.readlines():
     img_SEG = cv2.imread(f'{rutaBase}\\SEG\\{img_SEG_name}.tiff')
     print(img_SEG_name)
 
-    
     de.clear_listas()
     de.getRectCar(img_SEG)
     de.getRectBikesAndPedestrians(img_SEG)
     de.simplificar_motos()
+    de.save_to_yolo(".",img_SEG)
     de.mostrar(img_RGB)
+    
 
 
 

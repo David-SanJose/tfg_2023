@@ -21,7 +21,7 @@ class Deteccion:
 
 
     def getRectCar(self, img_SEG):
-
+        
         mask_coche = cv2.inRange(img_SEG, umbral_color_coche[0], umbral_color_coche[1])
         contornos_coche, _= cv2.findContours(mask_coche, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -98,7 +98,7 @@ class Deteccion:
                                 (box[0]+ box[2], box[1]+ box[3]), (0, 100, 255), 2)
             
 
-            
+        img_RGB_copy = cv2.resize(img_RGB_copy, (960, 540))
         cv2.imshow("IMAGEN", img_RGB_copy)
 
         key_pressed = cv2.waitKey(0)
@@ -128,6 +128,28 @@ class Deteccion:
         if w<0 or h<0: return () # or (0,0,0,0) ?
         return (x, y, w, h)
 
+    def box_to_yolo(self, box, img_SEG):
+        x, y, w, h = box
+        img_h, img_w = img_SEG.shape[:2]
+
+        x_centre = (x + w / 2) / img_w
+        y_centre = (y + h / 2) / img_h
+        new_width = (w * 1.1) / img_w
+        new_height = (w * 1.1) / img_h
+
+        return (x_centre, y_centre, new_width, new_height)
+    
+    def save_to_yolo(self, ruta_carpeta, img_SEG):
+        f = open(f"{ruta_carpeta}\\pruebaYOLO.txt", "w")
+        listas_a_guardar = [self.lista_box_coches,
+                            self.lista_box_motos,
+                            self.lista_box_peatones]
+        for i, lista in enumerate(listas_a_guardar):
+            for car in lista:
+                yolobox = self.box_to_yolo(car, img_SEG)
+                f_box = [ '%.6f' % elem for elem in yolobox ]
+                f_text = " ".join(f_box)
+                f.write(f"{i} {f_text}\n")
 '''
 Tomamos ambas imagenes
 Se localizan los vehiculos y peatones, almacenandose en listas

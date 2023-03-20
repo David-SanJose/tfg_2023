@@ -22,7 +22,10 @@ lista_f = open(f"{rutaBase}\\lista.csv")
 mostrar = True
 
 de = Deteccion()
-for row in lista_f.readlines():
+
+lista_txt = lista_f.readlines()
+
+for c, row in enumerate(lista_txt):
     #Se extraen los nombres de las imagenes
     (img_RGB_name, img_SEG_name) = row.split(";")[1:3]
 
@@ -35,8 +38,9 @@ for row in lista_f.readlines():
     de.getRectCar(img_SEG)
     de.getRectBikesAndPedestrians(img_SEG)
     de.simplificar_motos()
-    de.save_to_yolo(".",img_SEG)
-    de.mostrar(img_RGB)
+    de.save_to_yolo(f"{rutaBase}\\RGB",img_RGB_name,img_SEG)
+    #de.mostrar(img_RGB)
+    print(f"{c} / {len(lista_txt)}")
     
 
 

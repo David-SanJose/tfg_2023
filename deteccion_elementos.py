@@ -135,12 +135,12 @@ class Deteccion:
         x_centre = (x + w / 2) / img_w
         y_centre = (y + h / 2) / img_h
         new_width = (w * 1.1) / img_w
-        new_height = (w * 1.1) / img_h
+        new_height = (h * 1.1) / img_h
 
         return (x_centre, y_centre, new_width, new_height)
     
-    def save_to_yolo(self, ruta_carpeta, img_SEG):
-        f = open(f"{ruta_carpeta}\\pruebaYOLO.txt", "w")
+    def save_to_yolo(self, ruta_carpeta, nombre_img, img_SEG):
+        f = open(f"{ruta_carpeta}\\{nombre_img}.txt", "w")
         listas_a_guardar = [self.lista_box_coches,
                             self.lista_box_motos,
                             self.lista_box_peatones]

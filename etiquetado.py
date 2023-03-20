@@ -32,6 +32,10 @@ for c, row in enumerate(lista_txt):
     #Se cargan las imagenes
     img_RGB = cv2.imread(f'{rutaBase}\\RGB\\{img_RGB_name}.png')
     img_SEG = cv2.imread(f'{rutaBase}\\SEG\\{img_SEG_name}.tiff')
+    
+
+    if c == 0:
+        de.setObstacles(img_RGB)
     print(img_SEG_name)
 
     de.clear_listas()
@@ -39,7 +43,7 @@ for c, row in enumerate(lista_txt):
     de.getRectBikesAndPedestrians(img_SEG)
     de.simplificar_motos()
     de.save_to_yolo(f"{rutaBase}\\RGB",img_RGB_name,img_SEG)
-    #de.mostrar(img_RGB)
+    de.mostrar(img_RGB)
     print(f"{c} / {len(lista_txt)}")
     
 

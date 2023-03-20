@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+from tagger_manual import TaggerManual as Tagm
 
 
 UMBRAL_AREA_COCHE = 750
@@ -10,6 +11,10 @@ umbral_color_coche = (np.array([0, 0, 10]) , np.array([255, 255, 10]))
 umbral_color_peaton = (np.array([0, 0, 4]) , np.array([255, 255, 4]))
 mostrar = True
 
+KEY_ENTER = 13
+KEY_SPACE = 32
+KEY_D = 100
+
 class Deteccion:
     def __init__(self) -> None:
         
@@ -18,6 +23,8 @@ class Deteccion:
         self.lista_box_motos = []
         self.lista_posibles_motos = []
         self.lista_tmp_motos = []
+
+        self.lista_obstaculos = []
 
 
     def getRectCar(self, img_SEG):
@@ -150,6 +157,53 @@ class Deteccion:
                 f_box = [ '%.6f' % elem for elem in yolobox ]
                 f_text = " ".join(f_box)
                 f.write(f"{i} {f_text}\n")
+    # DEFINICIÖN DE TAGS MANUALES
+    def setObstacles(self, img_RGB):
+        img_RGB_copy = img_RGB.copy()
+        img_RGB_copy = cv2.resize(img_RGB_copy, (960, 540))
+        tagm = Tagm()
+        
+        cv2.namedWindow('obs_image_window')
+        cv2.setMouseCallback('obs_image_window',tagm.on_click)
+
+        key_pressed = -20
+        while key_pressed != KEY_SPACE:
+            tmp_img = img_RGB_copy.copy()
+
+            #Se muestra la seleccion actual en forma de rectangulo
+            tmp_coord = tagm.get_last_coordinates()
+            if len(tmp_coord) == 2:
+                tmp_img = cv2.rectangle(tmp_img, tmp_coord[0], 
+                                tmp_coord[1], (0, 200, 200), 1)
+            
+            #Se muestran los rectangulos aceptados
+            tmp_definitive_coords = tagm.get_def_coordinates()
+
+            for def_coord in tmp_definitive_coords:
+                tmp_img = cv2.rectangle(tmp_img, def_coord[0], 
+                                def_coord[1], (150, 200, 200), 2)
+            
+            cv2.imshow("obs_image_window", tmp_img)
+            key_pressed = cv2.waitKey(1000)
+
+            if key_pressed == KEY_ENTER:
+                tagm.validate_coordinate()
+                
+            elif key_pressed == KEY_D:
+                tagm.clean_last_coordinates()
+            
+            elif key_pressed == KEY_SPACE:
+                self.lista_obstaculos = tagm.get_def_coordinates()
+                print("Los obstaculos son:")
+                for obs in self.lista_obstaculos:
+                    print("- ", obs)
+
+        cv2.destroyWindow("obs_image_window")
+        #if key_pressed == -1: exit(0)
+
+
+            
+            
 '''
 Tomamos ambas imagenes
 Se localizan los vehiculos y peatones, almacenandose en listas

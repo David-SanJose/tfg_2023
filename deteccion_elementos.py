@@ -89,7 +89,16 @@ class Deteccion:
                     lista_tmp.append(a)
                     i = motos_size
             self.lista_box_motos = lista_tmp
-    
+
+    def eliminar_peatones_en_obstaculos(self):
+        copia_peatones = self.lista_box_peatones.copy()
+        for peaton in self.lista_box_peatones:
+            for obs in self.lista_obstaculos:
+                intersecion = self.box_intersection(peaton, obs)
+
+                if intersecion:
+                    copia_peatones.remove(peaton)
+        self.lista_box_peatones = copia_peatones
     def mostrar(self, img_RGB):
         img_RGB_copy = img_RGB.copy()
 
@@ -123,6 +132,7 @@ class Deteccion:
         self.lista_posibles_motos.clear()
 
         self.lista_tmp_motos.clear()
+
 
 
     def box_union(self, a, b):

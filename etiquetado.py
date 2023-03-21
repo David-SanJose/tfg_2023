@@ -43,8 +43,9 @@ for c, row in enumerate(lista_txt):
     de.getRectCar(img_SEG)
     de.getRectBikesAndPedestrians(img_SEG)
     de.simplificar_motos()
+    de.eliminar_peatones_en_obstaculos()
     de.save_to_yolo(f"{rutaBase}\\RGB",img_RGB_name,img_SEG)
-    de.mostrar(img_RGB)
+    #de.mostrar(img_RGB)
     print(f"{c} / {len(lista_txt)}")
     
 

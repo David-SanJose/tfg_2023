@@ -33,9 +33,10 @@ for c, row in enumerate(lista_txt):
     img_RGB = cv2.imread(f'{rutaBase}\\RGB\\{img_RGB_name}.png')
     img_SEG = cv2.imread(f'{rutaBase}\\SEG\\{img_SEG_name}.tiff')
     
-
+    #Fase inicial
     if c == 0:
         de.setObstacles(img_RGB)
+        de.setPedestrianLines(img_RGB)
     print(img_SEG_name)
 
     de.clear_listas()

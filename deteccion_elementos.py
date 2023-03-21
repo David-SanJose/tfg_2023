@@ -25,6 +25,7 @@ class Deteccion:
         self.lista_tmp_motos = []
 
         self.lista_obstaculos = []
+        self.lista_pedestrian_lines = []
 
 
     def getRectCar(self, img_SEG):
@@ -88,7 +89,7 @@ class Deteccion:
                     lista_tmp.append(a)
                     i = motos_size
             self.lista_box_motos = lista_tmp
-        
+    
     def mostrar(self, img_RGB):
         img_RGB_copy = img_RGB.copy()
 
@@ -103,6 +104,10 @@ class Deteccion:
         for box in self.lista_box_motos:
             img_RGB_copy = cv2.rectangle(img_RGB_copy, (box[0], box[1]), 
                                 (box[0]+ box[2], box[1]+ box[3]), (0, 100, 255), 2)
+            
+        for box in self.lista_pedestrian_lines:
+            img_RGB_copy = cv2.rectangle(img_RGB_copy, (box[0], box[1]), 
+                                (box[0]+ box[2], box[1]+ box[3]), (200, 150, 200), 2)
             
 
         img_RGB_copy = cv2.resize(img_RGB_copy, (960, 540))
@@ -150,7 +155,8 @@ class Deteccion:
         f = open(f"{ruta_carpeta}\\{nombre_img}.txt", "w")
         listas_a_guardar = [self.lista_box_coches,
                             self.lista_box_motos,
-                            self.lista_box_peatones]
+                            self.lista_box_peatones,
+                            self.lista_pedestrian_lines]
         for i, lista in enumerate(listas_a_guardar):
             for car in lista:
                 yolobox = self.box_to_yolo(car, img_SEG)
@@ -159,6 +165,20 @@ class Deteccion:
                 f.write(f"{i} {f_text}\n")
     # DEFINICIÖN DE TAGS MANUALES
     def setObstacles(self, img_RGB):
+        self.lista_obstaculos = self.set_boxes_manualy(img_RGB)
+
+    def setPedestrianLines(self, img_RGB):
+        self.lista_pedestrian_lines = self.set_boxes_manualy(img_RGB)
+
+    def coordinates_to_box(self, coord):
+        # Multiplies by 2 and transforms to box (x,y,w,h)
+        return [coord[0][0] * 2,
+        coord[0][1] * 2,
+        (coord[1][0] - coord[0][0]) * 2,
+        (coord[1][1] - coord[0][1]) * 2
+        ]
+
+    def set_boxes_manualy(self, img_RGB):
         img_RGB_copy = img_RGB.copy()
         img_RGB_copy = cv2.resize(img_RGB_copy, (960, 540))
         tagm = Tagm()
@@ -192,14 +212,17 @@ class Deteccion:
             elif key_pressed == KEY_D:
                 tagm.clean_last_coordinates()
             
-            elif key_pressed == KEY_SPACE:
-                self.lista_obstaculos = tagm.get_def_coordinates()
-                print("Los obstaculos son:")
-                for obs in self.lista_obstaculos:
-                    print("- ", obs)
+        lista_final = []
+        print("La lista de coordinadas final es:")
+        for obj in tagm.get_def_coordinates():
+            print("- ", obj)
+            new_obj = self.coordinates_to_box(obj)
+            lista_final.append(new_obj)
 
         cv2.destroyWindow("obs_image_window")
-        #if key_pressed == -1: exit(0)
+        return lista_final
+
+
 
 
             

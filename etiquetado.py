@@ -13,6 +13,7 @@ import cv2
 import numpy as np
 from deteccion_elementos import Deteccion
 import img_augmentator
+import yolo_box_transformer as ybt
 
 UMBRAL_AREA_COCHE = 750
 
@@ -20,9 +21,25 @@ UMBRAL_AREA_COCHE = 750
 rutaBase= "..\\imagenes\\img2"
 lista_f = open(f"{rutaBase}\\lista.csv")
 
-mostrar = True
+mostrar = False
 
 de = Deteccion()
+
+def save_img_and_boxes(image, boxes, name, path):
+    full_name = f"{path}\\{name}"
+
+    cv2.imwrite(f"{full_name}.png", image)
+    #array_boxes = boxes.to_xyxy_array()
+
+    f = open(f"{full_name}.txt", "w")
+    for box in boxes:
+        tmp_array = [box.x1_int, box.y1_int, box.x2_int, box.y2_int]
+        yolobox = ybt.imgaug_to_yolo(tmp_array, image)
+
+        f_box = [ '%.6f' % elem for elem in yolobox ]
+        f_text = " ".join(f_box)
+        f.write(f"{box.label} {f_text}\n")
+
 
 lista_txt = lista_f.readlines()
 
@@ -52,19 +69,22 @@ for c, row in enumerate(lista_txt):
         de.lista_pedestrian_lines]
     
     images_aug_with_boxes = img_augmentator.aug_test(img_RGB, all_boxes)
-    for img_aug, boxes in images_aug_with_boxes:
-        img_aug = boxes.draw_on_image(img_aug, size=2, color=[0, 0, 255])
-
-        print("SHAPE",img_aug.shape, img_RGB.shape)
-        img_aug_h = img_aug.shape[0]//2
-        img_aug_w = img_aug.shape[1]//2
-        img_aug = cv2.resize(img_aug, (img_aug_w, img_aug_h))
+    for c2 , (img_aug, boxes) in enumerate(images_aug_with_boxes):
         
-        cv2.imshow("AUG",img_aug)
-        cv2.waitKey(1000)
-    
-    
-    
+        nombre_aug = f"{img_RGB_name}_{c2}"
+        print(nombre_aug)
+        save_img_and_boxes(img_aug, boxes, nombre_aug, "..\\imagenes\\img2\\Aumentadas")
+        if mostrar:
+            img_aug_tmp = boxes.draw_on_image(img_aug, size=2, color=[0, 0, 255])
+            
+            img_aug_h = img_aug_tmp.shape[0]//2
+            img_aug_w = img_aug_tmp.shape[1]//2
+            img_aug_tmp = cv2.resize(img_aug_tmp, (img_aug_w, img_aug_h))
+            
+            cv2.imshow("AUG",img_aug_tmp)
+            cv2.waitKey()
+
+
     de.save_to_yolo(f"{rutaBase}\\RGB",img_RGB_name,img_SEG)
     de.mostrar(img_RGB)
     print(f"{c} / {len(lista_txt)}")

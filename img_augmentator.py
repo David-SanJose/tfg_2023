@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 
 seqRot90 = iaa.Sequential([
-    iaa.Rot90(1, keep_size=False)
+    iaa.Rotate(90)
 ])
 
 seqFlipH = iaa.Sequential([
@@ -17,6 +17,14 @@ seqFlipH = iaa.Sequential([
 
 seqFlipV = iaa.Sequential([
     iaa.Flipud(1)
+])
+
+seqRot180 = iaa.Sequential([
+    iaa.Rotate(180)
+])
+
+seqRot270 = iaa.Sequential([
+    iaa.Rotate(270)
 ])
 
 def aug_test(image, all_boxes):
@@ -29,7 +37,7 @@ def aug_test(image, all_boxes):
     
     bbs = BoundingBoxesOnImage(lista_boxes, shape=image.shape)
     
-    lista_aumentaciones = [seqRot90, seqFlipH, seqFlipV]
+    lista_aumentaciones = [seqRot90, seqFlipH, seqFlipV, seqRot180, seqRot270]
     images_with_boxes = []
     for aument in lista_aumentaciones:
         image_aug, bbs_aug = aument(image=image, bounding_boxes=bbs)

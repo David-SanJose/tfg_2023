@@ -41,7 +41,9 @@ def aug_test(image, all_boxes):
     images_with_boxes = []
     for aument in lista_aumentaciones:
         image_aug, bbs_aug = aument(image=image, bounding_boxes=bbs)
-    #image_flipH, bbs_flipH = seqFlipH(image=image, bounding_boxes=bbs)
+        #Se eliminan boxes exteriores
+        bbs_aug = bbs_aug.remove_out_of_image().clip_out_of_image()
+
         images_with_boxes.append((image_aug, bbs_aug))
-    #images_with_boxes.append((image_flipH, bbs_flipH))
+    
     return images_with_boxes

@@ -21,7 +21,7 @@ UMBRAL_AREA_COCHE = 750
 rutaBase= "..\\imagenes\\img2"
 lista_f = open(f"{rutaBase}\\lista.csv")
 
-mostrar = False
+mostrar = True
 
 de = Deteccion()
 

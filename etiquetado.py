@@ -21,7 +21,7 @@ UMBRAL_AREA_COCHE = 750
 rutaBase= "..\\imagenes\\img2"
 lista_f = open(f"{rutaBase}\\lista.csv")
 
-mostrar = True
+mostrar = False
 
 de = Deteccion()
 
@@ -73,7 +73,10 @@ for c, row in enumerate(lista_txt):
         
         nombre_aug = f"{img_RGB_name}_{c2}"
         print(nombre_aug)
-        save_img_and_boxes(img_aug, boxes, nombre_aug, "..\\imagenes\\img2\\Aumentadas")
+        ruta_aug = "..\\imagenes\\img2\\Aumentadas"
+        if c2 == 1:
+            ruta_aug = "..\\imagenes\\img2\\Aumentadas_check"
+        save_img_and_boxes(img_aug, boxes, nombre_aug, ruta_aug)
         if mostrar:
             img_aug_tmp = boxes.draw_on_image(img_aug, size=2, color=[0, 0, 255])
             
@@ -82,11 +85,13 @@ for c, row in enumerate(lista_txt):
             img_aug_tmp = cv2.resize(img_aug_tmp, (img_aug_w, img_aug_h))
             
             cv2.imshow("AUG",img_aug_tmp)
-            cv2.waitKey()
+            key_pressed = cv2.waitKey()
+            if key_pressed == -1: exit(0)
 
 
     de.save_to_yolo(f"{rutaBase}\\RGB",img_RGB_name,img_SEG)
-    de.mostrar(img_RGB)
+    if mostrar:
+        de.mostrar(img_RGB)
     print(f"{c} / {len(lista_txt)}")
     
     #aumentation software

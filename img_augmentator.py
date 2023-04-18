@@ -38,7 +38,7 @@ def aug_test(image, all_boxes):
     bbs = BoundingBoxesOnImage(lista_boxes, shape=image.shape)
     
     lista_aumentaciones = [seqRot90, seqFlipH, seqFlipV, seqRot180, seqRot270]
-    images_with_boxes = []
+    images_with_boxes = [(image, bbs)]
     for aument in lista_aumentaciones:
         image_aug, bbs_aug = aument(image=image, bounding_boxes=bbs)
         #Se eliminan boxes exteriores

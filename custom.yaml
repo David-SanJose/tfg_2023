@@ -1,0 +1,9 @@
+train: ..\imagenes\img2\Aumentadas\ 
+val:  ..\imagenes\img2\Aumentadas_test\
+test: ..\imagenes\img2\Aumentadas_test\
+
+# number of classes
+nc: 4
+
+# class names
+names: ["coche", "moto", "peaton", "paso"]

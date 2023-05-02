@@ -21,7 +21,8 @@ UMBRAL_AREA_COCHE = 750
 rutaBase= "..\\imagenes\\img2"
 lista_f = open(f"{rutaBase}\\lista.csv")
 
-mostrar = False
+mostrar = True
+interfaz_g = False
 
 de = Deteccion()
 
@@ -53,8 +54,12 @@ for c, row in enumerate(lista_txt):
     
     #Fase inicial
     if c == 0:
-        de.setObstacles(img_RGB)
-        de.setPedestrianLines(img_RGB)
+        if interfaz_g:
+            de.setObstacles(img_RGB)
+            de.setPedestrianLines(img_RGB)
+        else:
+            de.readObstaclesFromFile()
+            de.readPedestrianLinesFromFile()
     print(img_SEG_name)
 
     de.clear_listas()

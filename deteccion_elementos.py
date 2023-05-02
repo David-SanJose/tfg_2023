@@ -177,8 +177,34 @@ class Deteccion:
     def setObstacles(self, img_RGB):
         self.lista_obstaculos = self.set_boxes_manualy(img_RGB)
 
+        with open("boxes_obs.txt", "w") as f:
+            for line in self.lista_obstaculos:
+                f.write(f"{line}\n")
+        
+
     def setPedestrianLines(self, img_RGB):
         self.lista_pedestrian_lines = self.set_boxes_manualy(img_RGB)
+
+        with open("boxes_pedlines.txt", "w") as f:
+            for line in self.lista_pedestrian_lines:
+                f.write(f"{line}\n")
+
+
+    def readObstaclesFromFile(self):
+        f2 = open("boxes_obs.txt", "r")
+        self.lista_obstaculos = []
+        for i in f2.readlines():
+            res = i.strip('][\n').split(', ')
+            print("lista:",res)
+            self.lista_obstaculos.append([int(j) for j in res])
+    
+    def readPedestrianLinesFromFile(self):
+        f2 = open("boxes_pedlines.txt", "r")
+        self.lista_pedestrian_lines = []
+        for i in f2.readlines():
+            res = i.strip('][\n').split(', ')
+            print("lista:",res)
+            self.lista_pedestrian_lines.append([int(j) for j in res])
 
     def coordinates_to_box(self, coord):
         # Multiplies by 2 and transforms to box (x,y,w,h)
@@ -225,8 +251,9 @@ class Deteccion:
         lista_final = []
         print("La lista de coordinadas final es:")
         for obj in tagm.get_def_coordinates():
-            print("- ", obj)
+            
             new_obj = self.coordinates_to_box(obj)
+            print("- ", new_obj)
             lista_final.append(new_obj)
 
         cv2.destroyWindow("obs_image_window")

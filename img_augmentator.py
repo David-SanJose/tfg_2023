@@ -30,15 +30,19 @@ seqRot270 = iaa.Sequential([
 def aug_test(image, all_boxes):
 
     lista_boxes = []
+    #Se transforman las cajas a un formato manejable por imgaug
     for c, boxes_tmp in enumerate(all_boxes):
         for box in boxes_tmp:
             obj = BoundingBox(x1=box[0], y1=box[1],x2=box[0]+box[2], y2=box[1]+box[3], label=c)
             lista_boxes.append(obj)
     
     bbs = BoundingBoxesOnImage(lista_boxes, shape=image.shape)
-    
+    # Se especifican las aumentaciones a realizar
     lista_aumentaciones = [seqRot90, seqFlipH, seqFlipV, seqRot180, seqRot270]
+    # Se crea una lista que almacena una tupla (imagen, etiquetado),
+    # Almacenando la original en la primera posicion
     images_with_boxes = [(image, bbs)]
+    # Por cada aumentación, se genera una nueva imagen, junto con su etiquetado
     for aument in lista_aumentaciones:
         image_aug, bbs_aug = aument(image=image, bounding_boxes=bbs)
         #Se eliminan boxes exteriores

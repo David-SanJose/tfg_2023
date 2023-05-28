@@ -9,6 +9,9 @@ UMBRAL_AREA_MOTO = 10
 UMBRAL_AREA_PEATON = 20
 umbral_color_coche = (np.array([0, 0, 10]) , np.array([255, 255, 10]))
 umbral_color_peaton = (np.array([0, 0, 4]) , np.array([255, 255, 4]))
+umbral_color_road = (np.array([0, 0, 6]) , np.array([255, 255, 7]))
+
+
 mostrar = True
 
 KEY_ENTER = 13
@@ -133,8 +136,6 @@ class Deteccion:
 
         self.lista_tmp_motos.clear()
 
-
-
     def box_union(self, a, b):
         x = min(a[0], b[0])
         y = min(a[1], b[1])
@@ -147,7 +148,7 @@ class Deteccion:
         y = max(a[1], b[1])
         w = min(a[0]+a[2], b[0]+b[2]) - x
         h = min(a[1]+a[3], b[1]+b[3]) - y
-        if w<0 or h<0: return () # or (0,0,0,0) ?
+        if w<0 or h<0: return ()
         return (x, y, w, h)
 
     def box_to_yolo(self, box, img_SEG):
@@ -189,6 +190,27 @@ class Deteccion:
             for line in self.lista_pedestrian_lines:
                 f.write(f"{line}\n")
 
+    def setRoadContours(self, img_RGB,img_SEG):
+        mask_road = cv2.inRange(img_SEG, umbral_color_road[0], umbral_color_road[1])
+        contornos_road, jerarquia= cv2.findContours(mask_road, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        
+        rgb_cp = img_RGB.copy()
+       # print(contornos_road)
+        cv2.drawContours(rgb_cp, contornos_road[1], -1, (0,255,0), 3)
+        cv2.imshow("CONTORNOS",rgb_cp)
+        key_pressed = cv2.waitKey()
+        if key_pressed == -1: exit(0)
+        print("jerarquia",jerarquia)
+
+        cnt = contornos_road[1]
+        box = cv2.boundingRect(cnt)
+        rgb_cp = cv2.rectangle(rgb_cp, (box[0], box[1]), 
+                            (box[0]+ box[2], box[1]+ box[3]), (200, 150, 200), 2)
+        cv2.imshow("CONTORNOS",rgb_cp)
+        key_pressed = cv2.waitKey()
+        if key_pressed == -1: exit(0)
+        
+        exit(0)
 
     def readObstaclesFromFile(self):
         f2 = open("boxes_obs.txt", "r")
@@ -215,11 +237,15 @@ class Deteccion:
         ]
 
     def set_boxes_manualy(self, img_RGB):
+        # Se genera una copia de la imagen con la que trabajar
         img_RGB_copy = img_RGB.copy()
+        # Se modifica el tamaño para que quepa en la pantalla
         img_RGB_copy = cv2.resize(img_RGB_copy, (960, 540))
+        # Se llama a la clase encargada de crear etiquetas manuales
         tagm = Tagm()
         
         cv2.namedWindow('obs_image_window')
+        # Cada vez que se realice un clic, se llama a la funcion
         cv2.setMouseCallback('obs_image_window',tagm.on_click)
 
         key_pressed = -20

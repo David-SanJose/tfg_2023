@@ -1,5 +1,4 @@
 
-
 def imgaug_to_yolo(box, img):
         x, y, w, h = box
         img_h, img_w = img.shape[:2]

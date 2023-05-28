@@ -22,7 +22,7 @@ rutaBase= "..\\imagenes\\img2"
 lista_f = open(f"{rutaBase}\\lista.csv")
 
 mostrar = True
-interfaz_g = False
+interfaz_g = True
 
 de = Deteccion()
 
@@ -44,6 +44,7 @@ def save_img_and_boxes(image, boxes, name, path):
 
 lista_txt = lista_f.readlines()
 
+#Por cada tupla de imagenes, se realiza el proceso de etiquetado
 for c, row in enumerate(lista_txt):
     #Se extraen los nombres de las imagenes
     (img_RGB_name, img_SEG_name) = row.split(";")[1:3]
@@ -52,15 +53,17 @@ for c, row in enumerate(lista_txt):
     img_RGB = cv2.imread(f'{rutaBase}\\RGB\\{img_RGB_name}.png')
     img_SEG = cv2.imread(f'{rutaBase}\\SEG\\{img_SEG_name}.tiff')
     
-    #Fase inicial
+    #Fase inicial (Solo antes de la primera iteracion)
     if c == 0:
+        # Si hay interfaz gráfica se seleccionan obstaculos y 
+        # pasos de peatones
         if interfaz_g:
             de.setObstacles(img_RGB)
-            de.setPedestrianLines(img_RGB)
+            de.setPedestrianLines(img_RGB)            
         else:
             de.readObstaclesFromFile()
             de.readPedestrianLinesFromFile()
-    print(img_SEG_name)
+    
 
     de.clear_listas()
     de.getRectCar(img_SEG)
